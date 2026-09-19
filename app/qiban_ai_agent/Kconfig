@@ -1,0 +1,121 @@
+#
+# Qiban AI Agent - Kconfig
+#
+
+config LVX_USE_DEMO_CONTEST2026_110_QIBAN_AI_AGENT
+	bool "Qiban AI Agent"
+	default n
+	---help---
+		Board-side AI agent for the Qiban smart e-scooter dashboard.
+		Monitors vehicle state and triggers intelligent alerts
+		based on cycling scenario skills.
+
+if LVX_USE_DEMO_CONTEST2026_110_QIBAN_AI_AGENT
+
+config AI_AGENT_STACK_SIZE
+	int "Agent task stack size"
+	default 8192
+	---help---
+		Stack size for the AI agent main task.
+
+config AI_AGENT_POLL_INTERVAL_MS
+	int "Poll interval (milliseconds)"
+	default 1000
+	range 500 5000
+	---help---
+		How often to check vehicle state files.
+		Lower = more responsive, higher = less CPU usage.
+
+config AI_AGENT_MAX_SKILLS
+	int "Maximum number of skills"
+	default 16
+	range 4 32
+	---help---
+		Static array size for skill registry.
+
+config AI_AGENT_CLI_HISTORY_LEN
+	int "Trigger history buffer length"
+	default 20
+	range 5 50
+	---help---
+		Number of recent trigger events to record for debugging.
+
+# --- Individual skill enables ---
+
+config AI_SKILL_OVERSPEED
+	bool "Overspeed alert"
+	default y
+	---help---
+		Alert when speed exceeds threshold (default 25 km/h).
+
+config AI_SKILL_OVERSPEED_THRESHOLD
+	int "Overspeed threshold (km/h)"
+	default 25
+	depends on AI_SKILL_OVERSPEED
+
+config AI_SKILL_LOW_BATTERY
+	bool "Low battery warning"
+	default y
+	---help---
+		Warn when battery level drops below threshold.
+
+config AI_SKILL_LOW_BATTERY_THRESHOLD
+	int "Low battery threshold (%)"
+	default 20
+	depends on AI_SKILL_LOW_BATTERY
+
+config AI_SKILL_FATIGUE
+	bool "Fatigue riding alert"
+	default y
+	---help---
+		Suggest rest after prolonged continuous riding.
+
+config AI_SKILL_FATIGUE_THRESHOLD
+	int "Fatigue threshold (minutes)"
+	default 45
+	depends on AI_SKILL_FATIGUE
+
+config AI_SKILL_NAV_ARRIVAL
+	bool "Navigation arrival announcement"
+	default y
+	---help---
+		Announce when arriving at navigation destination.
+
+config AI_SKILL_NAV_TURN
+	bool "Navigation turn-by-turn reminder"
+	default y
+	---help---
+		Remind about upcoming turns during navigation.
+
+config AI_SKILL_SPEED_TREND
+	bool "Speed trend analysis"
+	default y
+	---help---
+		Detect sustained deceleration patterns.
+
+config AI_SKILL_RIDE_SUMMARY
+	bool "Ride summary generation"
+	default y
+	---help---
+		Generate ride summary when ride ends.
+
+config AI_SKILL_ROUTE_SUGGEST
+	bool "Proactive route suggestion"
+	default n
+	---help---
+		Suggest navigation when riding without active route.
+
+config AI_SKILL_WEATHER_SAFETY
+	bool "Weather-based safety reminder"
+	default n
+	---help---
+		Safety reminder in bad weather conditions.
+		Requires weather data from wifi_bridge.
+
+config AI_SKILL_EMERGENCY_STOP
+	bool "Emergency stop detection"
+	default y
+	---help---
+		Detect hard braking events and alert the rider.
+
+endif # LVX_USE_DEMO_CONTEST2026_110_QIBAN_AI_AGENT

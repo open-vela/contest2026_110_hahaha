@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://openvela.local/schemas/qiban_nav_state.schema.json",
+  "title": "Qiban Navigation State",
+  "description": "Canonical board-side navigation state payload for the Qiban AI dashboard MVP.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source",
+    "generated_at_epoch_s",
+    "active",
+    "destination",
+    "status",
+    "next_turn",
+    "total_distance_m",
+    "remaining_distance_m",
+    "eta_minutes",
+    "start_longitude",
+    "start_latitude",
+    "end_longitude",
+    "end_latitude"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at_epoch_s": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "destination": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "next_turn": {
+      "type": "string"
+    },
+    "total_distance_m": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "remaining_distance_m": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "eta_minutes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "start_longitude": {
+      "type": "number"
+    },
+    "start_latitude": {
+      "type": "number"
+    },
+    "end_longitude": {
+      "type": "number"
+    },
+    "end_latitude": {
+      "type": "number"
+    }
+  }
+}

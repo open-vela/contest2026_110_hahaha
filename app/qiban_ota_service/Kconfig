@@ -1,0 +1,12 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+config LVX_USE_DEMO_CONTEST2026_110_QIBAN_OTA_SERVICE
+	bool "Qiban OTA update service"
+	default n
+	---help---
+		Enable the application-layer OTA service for the contest 2026
+		team 110 Qiban AI dashboard.  This service polls a relay server
+		for app-level updates and atomically replaces service binaries.

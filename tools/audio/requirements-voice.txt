@@ -1,0 +1,6 @@
+edge-tts
+cffi
+miniaudio
+requests
+srt
+websockets

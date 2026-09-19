@@ -1,0 +1,19 @@
+{
+  "name": "qiban-ai-dashboard",
+  "version": "1.0.0",
+  "description": "QuickApp MVP for the Qiban AI electric scooter dashboard",
+  "engines": {
+    "node": ">=8.10"
+  },
+  "scripts": {
+    "start": "aiot server --watch --open-nuttx",
+    "build": "aiot build",
+    "prepare:release-sign": "./tools/prepare_release_sign.sh",
+    "release": "aiot release",
+    "watch": "aiot watch --open-nuttx"
+  },
+  "devDependencies": {
+    "aiot-toolkit": "2.0.3",
+    "ux-types": "^0.1.1"
+  }
+}

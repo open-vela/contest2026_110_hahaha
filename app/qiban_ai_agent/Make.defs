@@ -1,0 +1,7 @@
+############################################################################
+# Contest 2026 team 110 qiban AI agent - Make.defs
+############################################################################
+
+ifneq ($(CONFIG_LVX_USE_DEMO_CONTEST2026_110_QIBAN_AI_AGENT),)
+CONFIGURED_APPS += $(APPDIR)/demos/contest2026_110_qiban_ai_agent
+endif

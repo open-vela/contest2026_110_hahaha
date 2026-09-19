@@ -1,0 +1,31 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      QIBAN_SERVER_HOST: ${QIBAN_SERVER_HOST:-0.0.0.0}
+      QIBAN_SERVER_PORT: ${QIBAN_SERVER_PORT:-8787}
+      QIBAN_SERVER_DATA_DIR: ${QIBAN_SERVER_DATA_DIR:-/srv/qiban-relay/data}
+      QIBAN_SERVER_DB_PATH: ${QIBAN_SERVER_DB_PATH:-/srv/qiban-relay/data/qiban_relay.sqlite3}
+    volumes:
+      - ${QIBAN_SERVER_DATA_DIR_HOST:-./data}:${QIBAN_SERVER_DATA_DIR:-/srv/qiban-relay/data}
+    expose:
+      - "8787"
+
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      QIBAN_SERVER_DOMAIN: ${QIBAN_SERVER_DOMAIN}
+      QIBAN_ACME_EMAIL: ${QIBAN_ACME_EMAIL}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy_data:/data
+      - ./caddy_config:/config

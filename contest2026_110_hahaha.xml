@@ -9,8 +9,20 @@
   <include name="openvela.xml"/>
 
   <project path="contest2026_110_hahaha" name="contest2026_110_hahaha">
-    <linkfile src="app/hello_app" dest="packages/demos/contest2026_110_hello_app"/>
-    <linkfile src="quickapp/hello_quickapp" dest="packages/apps/contest2026_110_hello_quickapp"/>
+    <linkfile src="app/qiban_gps_receiver" dest="packages/demos/contest2026_110_qiban_gps_receiver"/>
+    <linkfile src="app/qiban_map_service" dest="packages/demos/contest2026_110_qiban_map_service"/>
+    <linkfile src="app/qiban_music_service" dest="packages/demos/contest2026_110_qiban_music_service"/>
+    <linkfile src="app/qiban_nav_service" dest="packages/demos/contest2026_110_qiban_nav_service"/>
+    <linkfile src="app/qiban_ota_service" dest="packages/demos/contest2026_110_qiban_ota_service"/>
+    <linkfile src="app/qiban_sensor_bridge" dest="packages/demos/contest2026_110_qiban_sensor_bridge"/>
+    <linkfile src="app/qiban_vehicle_service" dest="packages/demos/contest2026_110_qiban_vehicle_service"/>
+    <linkfile src="app/qiban_video_service" dest="packages/demos/contest2026_110_qiban_video_service"/>
+    <linkfile src="app/qiban_voice_service" dest="packages/demos/contest2026_110_qiban_voice_service"/>
+    <linkfile src="app/qiban_weather_service" dest="packages/demos/contest2026_110_qiban_weather_service"/>
+    <linkfile src="app/qiban_wifi_bridge" dest="packages/demos/contest2026_110_qiban_wifi_bridge"/>
+    <linkfile src="app/qiban_ai_agent" dest="packages/demos/contest2026_110_qiban_ai_agent"/>
+    <linkfile src="app/qiban_ui" dest="packages/demos/contest2026_110_qiban_ui"/>
+    <linkfile src="quickapp/qiban_ai_dashboard" dest="packages/apps/contest2026_110_qiban_ai_dashboard"/>
     <linkfile src="board/contest_board" dest="vendor/openvela/boards/contest2026_110_board"/>
   </project>
 </manifest>

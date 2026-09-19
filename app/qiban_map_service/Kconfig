@@ -1,0 +1,7 @@
+config LVX_USE_DEMO_CONTEST2026_110_QIBAN_MAP_SERVICE
+	bool "Qiban map service"
+	depends on LIB_CURL
+	default n
+	---help---
+		Enable the board-side map service that downloads or publishes a
+		PNG map image into /data/qiban_map/ for qiban_ui.

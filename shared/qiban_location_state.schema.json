@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://openvela.local/schemas/qiban_location_state.schema.json",
+  "title": "Qiban Location State",
+  "description": "Current rider location used by the Qiban AI dashboard. GNSS, phone relay, or mock test data can all publish this payload.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source",
+    "generated_at_epoch_s",
+    "longitude",
+    "latitude",
+    "accuracy_m"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at_epoch_s": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "longitude": {
+      "type": "number",
+      "minimum": -180,
+      "maximum": 180
+    },
+    "latitude": {
+      "type": "number",
+      "minimum": -90,
+      "maximum": 90
+    },
+    "accuracy_m": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

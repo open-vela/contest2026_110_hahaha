@@ -1,0 +1,10 @@
+<script>
+export default {
+  onCreate() {
+    console.log("qiban_ai_dashboard created")
+  },
+  onDestroy() {
+    console.log("qiban_ai_dashboard destroyed")
+  }
+}
+</script>

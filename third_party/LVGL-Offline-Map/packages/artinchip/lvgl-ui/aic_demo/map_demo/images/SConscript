@@ -1,0 +1,10 @@
+from building import *
+
+cwd = GetCurrentDir()
+group = []
+CPPPATH = [cwd, cwd + '/..', cwd + '/../../../aic_widgets/lv_offline_nav']
+src = Glob('./*.c')
+
+group = group + DefineGroup('LVGL-port', src, depend = ['AIC_LVGL_MAP_DEMO'], CPPPATH = CPPPATH)
+
+Return('group')

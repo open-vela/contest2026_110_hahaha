@@ -1,0 +1,4 @@
+interface:
+  display_name: "Qiban openvela Workflow"
+  short_description: "Build, verify, and deliver the Qiban R528 project"
+  default_prompt: "Use $qiban-openvela-workflow to inspect, build, verify, or prepare the Qiban openvela project for delivery."
