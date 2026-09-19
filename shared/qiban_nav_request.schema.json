@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://openvela.local/schemas/qiban_nav_request.schema.json",
+  "title": "Qiban Navigation Request",
+  "description": "Command-side navigation request payload for the Qiban AI board MVP.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source",
+    "generated_at_epoch_s",
+    "destination",
+    "start_longitude",
+    "start_latitude",
+    "requested_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at_epoch_s": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "destination": {
+      "type": "string",
+      "minLength": 1
+    },
+    "start_longitude": {
+      "type": "number"
+    },
+    "start_latitude": {
+      "type": "number"
+    },
+    "requested_by": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

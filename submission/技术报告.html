@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>骑伴 AI 智能电动车中控屏 - 技术报告</title>
+  <style>
+    @page { size: A4; margin: 20mm 18mm 20mm 18mm; }
+    body { font-family: "Noto Sans CJK SC", "Microsoft YaHei", sans-serif; color: #202124; font-size: 10.5pt; line-height: 1.65; }
+    h1 { font-size: 24pt; text-align: center; margin-top: 38mm; color: #12344d; }
+    h2 { font-size: 16pt; color: #12344d; border-bottom: 2px solid #2d6a7a; padding-bottom: 4px; page-break-after: avoid; }
+    h3 { font-size: 12.5pt; color: #1f5363; page-break-after: avoid; }
+    h4 { font-size: 11pt; page-break-after: avoid; }
+    p { text-align: justify; margin: 6px 0; }
+    table { width: 680px; table-layout: fixed; border-collapse: collapse; margin: 10px 0 16px; page-break-inside: avoid; }
+    th, td { border: 1px solid #8696a0; padding: 6px 8px; vertical-align: top; word-break: normal; overflow-wrap: break-word; }
+    th { background: #eaf2f4; color: #12344d; text-align: left; }
+    pre { border: 1px solid #aab7bd; background: #f6f8f9; padding: 10px; font-family: "Noto Sans Mono CJK SC", monospace; font-size: 8.5pt; line-height: 1.35; white-space: pre-wrap; page-break-inside: avoid; }
+    code { font-family: "Noto Sans Mono CJK SC", monospace; background: #f1f3f4; padding: 1px 3px; }
+    ul, ol { margin-top: 4px; }
+    li { margin: 3px 0; }
+    .cover-sub { text-align: center; font-size: 15pt; color: #315a67; margin-top: 20px; }
+    .cover-meta { text-align: center; margin-top: 35mm; font-size: 12pt; }
+    .page-break { page-break-before: always; }
+    .note { border-left: 4px solid #d17b2f; background: #fff6e8; padding: 8px 12px; }
+    .ok { color: #176b42; font-weight: bold; }
+    .pending { color: #9a4e0b; font-weight: bold; }
+    .small { font-size: 9pt; color: #52636b; }
+  </style>
+</head>
+<body>
+  <h1>骑伴 AI 智能电动车中控屏</h1>
+  <p class="cover-sub">2026 首届 openvela AI 硬件开发者大赛技术报告</p>
+  <div class="cover-meta">
+    <p style="text-align:center">队伍：hahaha（编号 110）</p>
+    <p style="text-align:center">仓库：contest2026_110_hahaha</p>
+    <p style="text-align:center">选题方向：AI 硬件产品创新</p>
+    <p style="text-align:center">报告日期：2026 年 9 月 19 日</p>
+  </div>
+
+  <div class="page-break"></div>
+  <h2>1、信息表</h2>
+  <table width="100%" cellspacing="0" cellpadding="6">
+    <tr><th style="width:25%">项目</th><th>内容</th></tr>
+    <tr><td>作品名称</td><td>骑伴 AI 智能电动车中控屏</td></tr>
+    <tr><td>队伍名称</td><td>hahaha（Team 110）</td></tr>
+    <tr><td>团队分工</td><td>xjx：方案设计、openvela 板端服务、LVGL 界面、快应用原型、服务端与文档整理。仓库未提供其他成员信息。</td></tr>
+    <tr><td>选题方向</td><td>AI 硬件产品创新</td></tr>
+    <tr><td>目标硬件</td><td>润芯微 Gemini-S1，Allwinner R528 双核 Cortex-A7，2.8 寸 SPI 屏，128 MB SPI NAND</td></tr>
+  </table>
+
+  <h2>2、摘要</h2>
+  <p>骑伴 AI 智能电动车中控屏面向电动车和两轮骑行场景，基于 Gemini-S1、openvela 与 LVGL，将车辆状态、离线地图导航、语音入口、音乐天气及主动安全提醒整合到 2.8 寸板载屏。系统以文件状态总线解耦 13 个板端模块，支持 UART/文件遥测、GPADC 电量、手机定位、离线瓦片和本地路网；板端规则 Agent 定义超速、低电量、疲劳、急停等 10 类 Skill。当前已生成可烧录固件并完成快应用构建验证，形成端侧优先、网络增强、断网可降级的骑行中控原型。</p>
+
+  <h2>3、正文</h2>
+  <h3>3.1 绪论</h3>
+  <h4>3.1.1 项目背景与问题定义</h4>
+  <p>传统电动车仪表通常只显示速度和电量，导航依赖手机，骑行过程中查看手机存在安全风险；弱网或断网时，在线地图和语音服务也容易失效。项目针对通勤骑手、校园和园区短途出行用户，将实时仪表、导航、语音入口和安全提醒集中到车载屏，并通过端侧规则维持基础能力。</p>
+  <h4>3.1.2 技术难点</h4>
+  <ul>
+    <li>在 R528 + 240×320 小屏上同时组织仪表、地图、语音、音乐和视频交互。</li>
+    <li>统一车辆遥测、定位、导航、天气和多媒体状态，避免模块间强耦合。</li>
+    <li>在弱网/断网条件下提供离线瓦片显示、本地路网规划与模拟数据兜底。</li>
+    <li>将安全规则从被动展示提升为可配置、带优先级和冷却时间的主动触发。</li>
+  </ul>
+  <h4>3.1.3 创新点</h4>
+  <ul>
+    <li><b>端侧主动安全：</b>用速度历史、阈值、状态转换和冷却状态机实现超速、低电量、疲劳、急刹等主动提醒。</li>
+    <li><b>文件状态总线：</b>各服务通过 <code>/data/qiban_*.json</code> 原子交换状态，便于独立开发、故障隔离和模拟输入。</li>
+    <li><b>在线/离线双路径：</b>在线时可使用 HTTP 地图、天气与语音中转，离线时使用本地瓦片、路网和基础规则。</li>
+    <li><b>一套数据、多种界面：</b>原生 LVGL 为主界面，同时保留 Quick App 原型用于早期交互验证。</li>
+  </ul>
+
+  <h3>3.2 系统方案设计</h3>
+  <h4>3.2.1 系统总体架构</h4>
+  <pre>手机定位 / UART / GPADC / 测试数据
+                │
+                ▼
+ GPS Receiver / Sensor Bridge / Vehicle Service
+                │  /data/qiban_*.json
+                ▼
+      ┌──────── 文件状态总线 ────────┐
+      │              │               │
+      ▼              ▼               ▼
+ Nav + Map       AI Agent       Voice / Weather
+ 在线路线         规则 Skill      ASR/TTS 中转
+ 离线路网         主动提醒         网络增强
+      │              │               │
+      └──────────────┼───────────────┘
+                     ▼
+         LVGL 中控 UI / Quick App 原型
+                     │
+          SPI LCD / 触控 / 音频设备</pre>
+  <p>板端以 openvela/NuttX 为运行底座。车辆服务按 1 秒周期生成状态；UI 周期读取状态文件并刷新界面；导航、地图、语音、天气、音乐、视频和 OTA 作为独立应用存在。FastAPI 中转服务提供 ASR/TTS 作业、遥测和 OTA 接口。</p>
+
+  <h4>3.2.2 方案论证与选型</h4>
+  <table width="100%" cellspacing="0" cellpadding="6">
+    <tr><th>维度</th><th>采用方案</th><th>理由与备选对比</th></tr>
+    <tr><td>硬件</td><td>Gemini-S1 / R528</td><td>具备 openvela 基线、双核 Cortex-A7、显示/音频/网络和丰富外设，比纯 MCU 更适合复合 UI 与联网服务。</td></tr>
+    <tr><td>界面</td><td>原生 LVGL 为主，Quick App 为原型</td><td>LVGL 直接使用板载 LCD 与触控，启动链路更短；Quick App 保留用于页面原型和独立打包。</td></tr>
+    <tr><td>通信</td><td>JSON 文件状态总线</td><td>实现简单、可调试、模块故障互不拖累；代价是实时性和并发能力弱于消息总线。</td></tr>
+    <tr><td>地图</td><td>离线瓦片 + 本地路网，在线 HTTP 增强</td><td>断网仍可显示和规划；在线静态地图用于快速更新。</td></tr>
+    <tr><td>AI</td><td>端侧规则 Agent</td><td>确定性强、资源开销可控、无需持续联网；当前未接入 MiMo/LLM 推理。</td></tr>
+  </table>
+  <p><b>端云职责：</b>端侧负责采集、状态融合、UI、基础导航、规则提醒和多媒体；主机/服务端负责 ASR/TTS 作业中转、遥测保存与 OTA 文件分发。断网时语音云链路不可用，但仪表、离线地图、本地路网和本地规则可继续运行。</p>
+
+  <h4>3.2.3 关键模块</h4>
+  <table width="100%" cellspacing="0" cellpadding="6">
+    <tr><th>模块</th><th>职责</th><th>主要接口</th></tr>
+    <tr><td>qiban_vehicle_service</td><td>融合模拟值、文件遥测和 GPADC 电量，生成告警</td><td>/data/qiban_vehicle_state.json</td></tr>
+    <tr><td>qiban_sensor_bridge</td><td>接收 key=value UART/文本遥测和位置</td><td>/data/qiban_inputs/*</td></tr>
+    <tr><td>qiban_nav_service</td><td>目的地解析、路线状态、导航 watch</td><td>/data/qiban_nav_state.json</td></tr>
+    <tr><td>qiban_map_service</td><td>在线 PNG、离线瓦片和 road_graph.bin 管理</td><td>/data/qiban_map/、/data/qiban_offline_map/</td></tr>
+    <tr><td>qiban_ui</td><td>仪表、地图、语音、天气、音乐和视频界面</td><td>/dev/lcd0、/dev/input0、LVGL</td></tr>
+    <tr><td>qiban_ai_agent</td><td>状态分析、Skill 触发、动作命令生成</td><td>/data/qiban_*_cmd.json</td></tr>
+    <tr><td>qiban_voice_service</td><td>录放音会话、文本意图、ASR/TTS 任务</td><td>/dev/audio/*、HTTP</td></tr>
+    <tr><td>server</td><td>ASR/TTS 作业、遥测、OTA API</td><td>FastAPI + SQLite + HTTP</td></tr>
+  </table>
+
+  <h3>3.3 核心算法与技术原理</h3>
+  <h4>3.3.1 AI 算法实现</h4>
+  <p>当前版本没有部署神经网络模型，也未接入 MiMo。AI 能力采用板端确定性规则 Agent：每秒读取车辆、导航和位置状态，维护 30 秒速度环形缓冲，计算均速和速度趋势，再逐一执行 Skill 的触发函数。Skill 带启用状态、优先级、阈值、时间窗口、触发次数和冷却时间，可从 NSH 命令行查看和调整。</p>
+  <table width="100%" cellspacing="0" cellpadding="6">
+    <tr><th>Skill</th><th>触发条件</th><th>动作</th></tr>
+    <tr><td>overspeed</td><td>速度 &gt; 25 km/h</td><td>语音/告警命令</td></tr>
+    <tr><td>low_battery</td><td>电量 ≤ 20%</td><td>语音 + UI 告警</td></tr>
+    <tr><td>fatigue</td><td>连续骑行 ≥ 45 分钟</td><td>休息提醒</td></tr>
+    <tr><td>nav_arrival / nav_turn</td><td>到达或距转向点 ≤ 200 m</td><td>导航播报</td></tr>
+    <tr><td>speed_trend</td><td>持续减速趋势</td><td>安全提示</td></tr>
+    <tr><td>ride_summary</td><td>停车达到时间阈值</td><td>骑行摘要命令</td></tr>
+    <tr><td>route_suggest</td><td>骑行且未导航</td><td>主动路线建议</td></tr>
+    <tr><td>weather_safety</td><td>雨雪或大风</td><td>语音 + UI 告警</td></tr>
+    <tr><td>emergency_stop</td><td>2 秒内由 &gt;15 km/h 骤降超过 12 km/h</td><td>高优先级语音、告警、切页命令</td></tr>
+  </table>
+  <p class="note"><b>完成度说明：</b>上述 Skill 源码已存在，但当前默认固件配置未启用 Agent，动作消费者也未形成完整闭环；因此报告将其列为“已实现源码、未完成真机验收”。</p>
+
+  <h4>3.3.2 关键机制</h4>
+  <ul>
+    <li><b>原子状态发布：</b>多数服务先写 <code>.tmp</code>，完成后 <code>rename()</code>，降低掉电或并发读取导致半文件的概率。</li>
+    <li><b>多源融合与降级：</b>车辆服务以模拟状态为基底，文件遥测优先覆盖，电量文件缺失时尝试 GPADC。</li>
+    <li><b>离线路径规划：</b>LVGL 离线地图组件加载瓦片和二进制路网，支持长按选点和本地路线渲染。</li>
+    <li><b>Skill 状态机：</b><code>IDLE → FIRED → COOLDOWN</code>，避免同类提醒每秒重复触发。</li>
+  </ul>
+
+  <h4>3.3.3 openvela 系统能力运用</h4>
+  <table width="100%" cellspacing="0" cellpadding="6">
+    <tr><th>能力</th><th>落地内容</th><th>状态</th></tr>
+    <tr><td>图形</td><td>LVGL、LCD framebuffer、触控输入、中文字体、拼音输入、离线地图控件</td><td class="ok">已编译进固件</td></tr>
+    <tr><td>AI</td><td>板端规则 Agent 与 10 个骑行 Skill</td><td class="pending">源码完成，默认固件未启用</td></tr>
+    <tr><td>多媒体</td><td>NXPlayer/NXRecorder 音频测试、PCM 录放音、音乐服务、视频服务代码</td><td class="pending">音乐已编译；语音/视频未完成整链路验收</td></tr>
+    <tr><td>网络</td><td>libcurl、Socket HTTP、手机定位 HTTP 接收、FastAPI 中转</td><td class="pending">代码完成，缺少完整真机测试数据</td></tr>
+  </table>
+  <p><b>改进建议：</b>openvela 可提供统一轻量 IPC/事件总线、标准运行时 Skill 清单与生命周期管理、R528 多媒体示例配置，以及可直接采集内存/CPU/功耗的比赛测量工具，减少团队自行拼接状态文件和测试脚本的成本。</p>
+
+  <h3>3.4 系统实现</h3>
+  <h4>3.4.1 软件/固件架构</h4>
+  <p>项目使用 <code>contest2026_110_hahaha.xml</code> 将比赛仓模块映射进 openvela 的 <code>packages/demos</code> 与 <code>packages/apps</code>。板卡基线为 <code>r528s3-gemini-s1/configs/nsh_minidisplay</code>；辅助脚本修改 defconfig 和 <code>rcS.nsh</code>，配置服务开机启动。仓库现有 13 个板端模块目录、一个 Quick App、一个 FastAPI 服务端及共享 JSON Schema。</p>
+
+  <h4>3.4.2 数据流与关键流程</h4>
+  <pre>每 1 秒：
+传感器/模拟值 → vehicle_service → vehicle_state.json
+                                 ↓
+location.json → nav_service → nav_state.json → map_service
+      │                          ↓              ↓
+      └──────────────────────→ qiban_ui ← map state / 离线瓦片
+
+Agent 路径：
+vehicle/nav/location JSON → 速度历史与状态分析 → Skill 条件判断
+→ 语音/UI/导航/告警命令 JSON → 对应服务（当前闭环未全部完成）</pre>
+
+  <h4>3.4.3 硬件设计与适配</h4>
+  <table width="100%" cellspacing="0" cellpadding="6">
+    <tr><th>类别</th><th>内容</th></tr>
+    <tr><td>开发板</td><td>润芯微 Gemini-S1（Allwinner R528）</td></tr>
+    <tr><td>显示</td><td>2.8 寸 SPI LCD，目标分辨率 240×320，触控输入路径 /dev/input0</td></tr>
+    <tr><td>存储</td><td>128 MB SPI NAND，/data 使用 YAFFS</td></tr>
+    <tr><td>接口</td><td>UART 遥测、GPADC 电量；Wi-Fi、麦克风、扬声器作为扩展链路</td></tr>
+    <tr><td>关键 BOM</td><td>Gemini-S1 开发板、2.8 寸 SPI 屏、USB/串口连接线；外部 GNSS/BMS/轮速传感器未形成最终 BOM</td></tr>
+    <tr><td>全新平台适配</td><td>否。复用官方 R528S3-Gemini-S1 BSP，在现有板卡配置上增加应用和启动配置。</td></tr>
+  </table>
+
+  <h4>3.4.4 应用与交互</h4>
+  <p>原生 UI 在 Tileview 中组织仪表、离线地图、语音/天气、音乐和媒体浏览界面。仪表显示速度、电量、续航、时长、里程和告警；地图支持缩放、平移、定位标记和长按选终点；语音页支持预设目的地和中文输入。Quick App 保留首页、导航页、助手页三页原型。</p>
+
+  <h4>3.4.5 自定义 Skill</h4>
+  <p>仓库沉淀了 10 个 C 语言 Skill，入口位于 <code>app/qiban_ai_agent/src/skills/</code>，由注册表按 Kconfig 条件编译。它们覆盖安全、导航和骑行总结场景。赛事要求的 <code>/data/agent/skills/</code> 运行时 Skill 定义尚未完成，当前实现是静态编译形式。</p>
+
+  <h3>3.5 系统测试与结果分析</h3>
+  <h4>3.5.1 测试环境</h4>
+  <table width="100%" cellspacing="0" cellpadding="6">
+    <tr><th>项目</th><th>环境</th></tr>
+    <tr><td>主机</td><td>Linux，项目工作区 /home/xjx</td></tr>
+    <tr><td>目标</td><td>R528S3-Gemini-S1，nsh_minidisplay</td></tr>
+    <tr><td>Quick App</td><td>Node.js + aiot-toolkit 2.0.3</td></tr>
+    <tr><td>检查日期</td><td>固件产物 2026-09-07；提交材料复核 2026-09-19</td></tr>
+  </table>
+
+  <h4>3.5.2 功能与构建测试</h4>
+  <table width="100%" cellspacing="0" cellpadding="6">
+    <tr><th>测试项</th><th>结果</th><th>证据/说明</th></tr>
+    <tr><td>openvela 固件编译与打包</td><td class="ok">通过（历史产物）</td><td>生成 25,667,584 B NAND 镜像；vela.bin 为 3,763,256 B。</td></tr>
+    <tr><td>核心板端模块入固件</td><td class="ok">通过</td><td>System.map 包含地图、音乐、导航、传感器、车辆、UI、语音、天气入口。</td></tr>
+    <tr><td>Quick App debug 构建</td><td class="ok">通过</td><td>2026-09-19 执行 npm run build，生成 33,536 B debug.rpk。</td></tr>
+    <tr><td>Python 语法</td><td class="ok">通过</td><td>server/app、audio、map、openvela、OTA 工具 compileall 通过。</td></tr>
+    <tr><td>Shell/JSON 静态检查</td><td class="ok">通过</td><td>Shell 脚本 bash -n、shared JSON 解析通过。</td></tr>
+    <tr><td>离线地图素材</td><td class="ok">已生成</td><td>长沙样例 4,478 张瓦片，共 19,744,093 B；路网 178,332 B。</td></tr>
+    <tr><td>AI Agent / GPS / Wi-Fi / OTA / 视频默认启用</td><td class="pending">未通过</td><td>当前 defconfig 未启用这些新增模块，未进入 9 月 7 日固件。</td></tr>
+    <tr><td>release.rpk</td><td class="pending">未提供</td><td>仓库当前仅有 debug.rpk。</td></tr>
+  </table>
+
+  <h4>3.5.3 性能与可靠性</h4>
+  <table width="100%" cellspacing="0" cellpadding="6">
+    <tr><th>指标</th><th>数据</th><th>口径</th></tr>
+    <tr><td>状态/UI 更新周期</td><td>1,000 ms</td><td>代码配置值，不是端到端实测时延。</td></tr>
+    <tr><td>Agent 轮询周期</td><td>1,000 ms（可配 500–5,000 ms）</td><td>Kconfig 设计值；默认固件未启用。</td></tr>
+    <tr><td>语音格式</td><td>16 kHz / 16 bit / mono，32 KB/s</td><td>录放音链路约定。</td></tr>
+    <tr><td>固件 ELF 静态段</td><td>text 3,702,732 B；data 60,524 B；bss 6,344,168 B</td><td>9 月 7 日构建的 size 输出。</td></tr>
+    <tr><td>推理帧率/模型占用</td><td>不适用</td><td>当前无神经网络模型。</td></tr>
+    <tr><td>功耗、真机响应时延、连续运行时长</td><td class="pending">未测</td><td>仓库无可信实测记录。</td></tr>
+    <tr><td>准确率、误报率、漏报率</td><td class="pending">未测</td><td>规则阈值已定义，但没有标注数据集和统计样本。</td></tr>
+  </table>
+  <p><b>可靠性设计：</b>状态文件使用临时文件加 rename 原子替换；输入缺失时可回退模拟值；Skill 设冷却时间抑制重复告警；OTA 代码包含 SHA-256、备份和回滚路径。<b>未完成项：</b>尚无长稳测试、断电恢复测试、网络抖动测试和安全类误报/漏报统计，不能给出量化可靠性结论。</p>
+
+  <h3>3.6 AI-Native 开发说明</h3>
+  <table width="100%" cellspacing="0" cellpadding="6">
+    <tr><th>指标</th><th>数据</th></tr>
+    <tr><td>AI Coding 代码占比</td><td>未统计。仓库日志仅为部分会话，无法据此给出可信百分比。</td></tr>
+    <tr><td>使用的 AI 工具</td><td>Codex（日志清单可证实）</td></tr>
+    <tr><td>MCP 工具使用情况</td><td>现有日志未记录 MCP 使用。</td></tr>
+    <tr><td>Skills 使用与新增</td><td>新增 10 个骑行场景 C Skill；运行时 /data/agent/skills 版本未完成。</td></tr>
+    <tr><td>Token 使用总量</td><td>256,552,658（16 个 Codex 项目会话的原始 rollout 统计口径）</td></tr>
+    <tr><td>日志状态</td><td>logs/xjx 中 16 个真实导出会话；15 个为 ok，1 个因原始 rollout 存在一条损坏记录标为 partial。</td></tr>
+  </table>
+  <p>AI 工具主要用于比赛要求拆解、模块划分、板级编译流程梳理、C/Quick App/FastAPI 骨架生成、编译问题定位与文档整理。效率收益体现在并行形成多个服务原型和统一状态协议；主要问题是早期文档容易把规划写成已完成，因此本报告以源码、配置和构建产物重新核验，并明确区分“源码存在”“编译进入固件”“真机验证”三种状态。</p>
+
+  <h3>3.7 总结与展望</h3>
+  <p>项目已形成面向两轮出行的 openvela 中控原型：板端服务、LVGL 多页面 UI、地图导航、语音与多媒体代码、规则 Agent、服务端和 OTA 工具均有源码，核心模块曾成功编译为 R528 NAND 镜像。其价值在于把传统仪表升级为可扩展的主动服务终端，并兼顾断网场景。</p>
+  <p><b>目标受众：</b>城市通勤、校园/园区骑行用户，以及电动车整车厂和智能仪表方案商。<b>商业模式：</b>可作为整车前装中控、存量车辆后装终端或软硬件 SDK 授权方案；离线地图和模块化服务有利于面向不同车型裁剪。</p>
+  <p><b>不足：</b>Agent 未进入默认固件，运行时 Skill 规范、真实车辆协议、完整语音闭环、release.rpk、实物视频和量化测试均未完成。后续应优先完成配置收敛和真机验收，再补功耗、时延、连续运行与告警准确率数据，最后评估 MiMo/LLM 在骑行摘要和复杂意图理解中的必要性。</p>
+
+  <h2>附录 A：复现命令</h2>
+  <pre>repo init -u https://github.com/open-vela/contest2026_110_hahaha \
+  -b dev-ai-contest-2026 -m contest2026_110_hahaha.xml
+repo sync -c -j8
+
+python3 contest2026_110_hahaha/tools/openvela/enable_r528_qiban_mvp.py \
+  --openvela-root .
+
+./build.sh vendor/allwinnertech/boards/r528/r528s3-gemini-s1/configs/nsh_minidisplay/ \
+  distclean -j8
+./build.sh vendor/allwinnertech/boards/r528/r528s3-gemini-s1/configs/nsh_minidisplay/ -j8
+
+cd contest2026_110_hahaha/quickapp/qiban_ai_dashboard
+npm install
+npm run build</pre>
+
+  <h2>附录 B：提交时的完成度声明</h2>
+  <p class="note">本报告依据本地仓库与构建产物整理。未提供或未验证的功能均已标注，不以设计文档代替实测结果。项目源码与 AI Coding 日志位于赛事专属仓；本地提交压缩包只放技术报告及现有辅助材料。</p>
+  <p class="small">报告结束</p>
+</body>
+</html>

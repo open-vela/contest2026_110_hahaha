@@ -1,0 +1,269 @@
+<template>
+  <div class="page">
+    <div class="hero">
+      <div class="hero-top">
+        <div class="brand-block">
+          <text class="brand-title">骑伴 AI</text>
+          <text class="brand-subtitle">智能电动车中控屏</text>
+        </div>
+        <text class="clock">{{ currentTime }}</text>
+      </div>
+
+      <div class="hero-main">
+        <div class="speed-block">
+          <text class="speed-value">{{ speed }}</text>
+          <text class="speed-unit">km/h</text>
+        </div>
+        <div class="ride-summary">
+          <text class="summary-title">{{ destination }}</text>
+          <text class="summary-text">{{ nextTurn }}</text>
+          <text class="summary-text">预计到达 {{ eta }}</text>
+        </div>
+      </div>
+    </div>
+
+    <div class="metric-row">
+      <div class="metric-card">
+        <text class="metric-label">电量</text>
+        <text class="metric-value">{{ battery }}</text>
+      </div>
+      <div class="metric-card">
+        <text class="metric-label">里程</text>
+        <text class="metric-value">{{ tripDistance }}</text>
+      </div>
+      <div class="metric-card">
+        <text class="metric-label">时长</text>
+        <text class="metric-value">{{ rideDuration }}</text>
+      </div>
+    </div>
+
+    <div class="section">
+      <text class="section-title">主动提醒</text>
+      <div class="warning-list">
+        <div class="warning-item" for="{{ warnings }}">
+          <text class="warning-title">{{ $item.title }}</text>
+          <text class="warning-detail">{{ $item.detail }}</text>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <text class="section-title">快捷入口</text>
+      <div class="action-row">
+        <div class="action-chip" for="{{ quickActions }}" onclick="goToPage($item.target)">
+          <text class="action-text">{{ $item.title }}</text>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-tip">
+      <text class="footer-text">{{ sourceLabel }}</text>
+    </div>
+  </div>
+</template>
+
+<script>
+import Page from "./index.js"
+
+export default Page
+</script>
+
+<style>
+.page {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  padding: 16px;
+  background-color: #070b12;
+}
+
+.hero {
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #0f172a;
+  border-width: 1px;
+  border-color: #263244;
+  margin-bottom: 12px;
+}
+
+.hero-top {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.brand-block {
+  flex-direction: column;
+}
+
+.brand-title {
+  font-size: 34px;
+  color: #f8fafc;
+  font-weight: 600;
+}
+
+.brand-subtitle {
+  font-size: 22px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.clock {
+  font-size: 32px;
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.hero-main {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.speed-block {
+  width: 150px;
+  height: 150px;
+  border-radius: 75px;
+  background-color: #070b12;
+  border-width: 1px;
+  border-color: #334155;
+  justify-content: center;
+  align-items: center;
+}
+
+.speed-value {
+  font-size: 52px;
+  color: #f8fafc;
+  font-weight: 700;
+}
+
+.speed-unit {
+  font-size: 22px;
+  color: #94a3b8;
+}
+
+.ride-summary {
+  flex: 1;
+  margin-left: 18px;
+  flex-direction: column;
+}
+
+.summary-title {
+  font-size: 24px;
+  color: #f8fafc;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.summary-text {
+  font-size: 22px;
+  color: #cbd5e1;
+  margin-bottom: 4px;
+}
+
+.metric-row {
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.metric-card {
+  width: 31%;
+  border-radius: 8px;
+  padding: 14px 12px;
+  background-color: #111827;
+  border-width: 1px;
+  border-color: #263244;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-size: 18px;
+  color: #94a3b8;
+}
+
+.metric-value {
+  font-size: 28px;
+  color: #f8fafc;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.section {
+  border-radius: 8px;
+  padding: 14px;
+  background-color: #0f172a;
+  border-width: 1px;
+  border-color: #263244;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 24px;
+  color: #f8fafc;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.warning-list {
+  flex-direction: column;
+}
+
+.warning-item {
+  border-radius: 8px;
+  padding: 10px 0px;
+  background-color: #0f172a;
+  border-bottom-width: 1px;
+  border-color: #263244;
+  margin-bottom: 4px;
+}
+
+.warning-title {
+  font-size: 22px;
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.warning-detail {
+  font-size: 20px;
+  color: #cbd5e1;
+  margin-top: 4px;
+}
+
+.action-row {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.action-chip {
+  border-radius: 8px;
+  padding: 10px 14px;
+  background-color: #111827;
+  border-width: 1px;
+  border-color: #334155;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-text {
+  font-size: 20px;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.footer-tip {
+  border-radius: 8px;
+  padding: 12px;
+  background-color: #101827;
+  border-width: 1px;
+  border-color: #263244;
+}
+
+.footer-text {
+  font-size: 18px;
+  color: #94a3b8;
+}
+</style>

@@ -1,0 +1,7 @@
+{
+  "condition": "clear",
+  "temperature_c": 28,
+  "humidity": 45,
+  "wind_speed_kmh": 12,
+  "city": "北京"
+}

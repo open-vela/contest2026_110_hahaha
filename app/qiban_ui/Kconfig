@@ -1,0 +1,7 @@
+config LVX_USE_DEMO_CONTEST2026_110_QIBAN_UI
+	bool "Qiban native LVGL UI"
+	depends on GRAPHICS_LVGL
+	default n
+	---help---
+		Enable the board-side native LVGL dashboard for the contest 2026
+		team 110 Qiban AI project.

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>骑伴 GPS 定位</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+h1 { font-size: 20px; margin-bottom: 16px; color: #38bdf8; }
+.card {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 16px;
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 12px;
+}
+label { font-size: 13px; color: #94a3b8; display: block; margin-bottom: 4px; }
+input[type="text"], input[type="number"] {
+  width: 100%;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 16px;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+button {
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 12px;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+.btn-start { background: #0f766e; color: white; }
+.btn-stop  { background: #991b1b; color: white; }
+.btn-manual { background: #1e40af; color: white; }
+.btn-start:disabled { background: #334155; }
+.status {
+  font-size: 14px;
+  padding: 8px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.status-ok   { background: #166534; color: #bbf7d0; }
+.status-err  { background: #7f1d1d; color: #fca5a5; }
+.status-wait { background: #1e3a5f; color: #93c5fd; }
+.coords { font-size: 13px; color: #94a3b8; text-align: center; }
+.coords b { color: #38bdf8; font-size: 15px; }
+.row { display: flex; gap: 8px; }
+.row input { flex: 1; }
+.count { font-size: 12px; color: #64748b; text-align: center; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<h1>骑伴 GPS 定位</h1>
+
+<div class="card">
+  <label>开发板 IP 地址</label>
+  <input type="text" id="boardIp" placeholder="例如 192.168.1.100" value="">
+  <label>端口</label>
+  <input type="number" id="boardPort" value="8080">
+</div>
+
+<div class="card">
+  <button class="btn-start" id="btnStart" onclick="startGps()">开始定位</button>
+  <button class="btn-stop" id="btnStop" onclick="stopGps()" disabled>停止</button>
+  <div class="status" id="status">等待启动</div>
+</div>
+
+<div class="card">
+  <div class="coords" id="coords">
+    经度: <b>--</b><br>
+    纬度: <b>--</b><br>
+    精度: <b>--</b> 米
+  </div>
+  <div class="count" id="count">已发送: 0 次</div>
+</div>
+
+<div class="card">
+  <label>手动发送坐标</label>
+  <div class="row">
+    <input type="text" id="manualLon" placeholder="经度 116.481">
+    <input type="text" id="manualLat" placeholder="纬度 39.990">
+  </div>
+  <button class="btn-manual" onclick="sendManual()">手动发送</button>
+</div>
+
+<script>
+var watchId = null;
+var sendCount = 0;
+var lastSendTime = 0;
+var SEND_INTERVAL_MS = 1000; // 1 second
+
+function getBaseUrl() {
+  var ip = document.getElementById('boardIp').value.trim();
+  var port = document.getElementById('boardPort').value.trim();
+  if (!ip) { alert('请输入开发板 IP'); return null; }
+  return 'http://' + ip + ':' + port;
+}
+
+function setStatus(text, cls) {
+  var el = document.getElementById('status');
+  el.textContent = text;
+  el.className = 'status ' + cls;
+}
+
+function updateCoords(lon, lat, acc) {
+  document.getElementById('coords').innerHTML =
+    '经度: <b>' + lon.toFixed(6) + '</b><br>' +
+    '纬度: <b>' + lat.toFixed(6) + '</b><br>' +
+    '精度: <b>' + (acc ? acc.toFixed(1) : '--') + '</b> 米';
+}
+
+function sendGps(lon, lat) {
+  var base = getBaseUrl();
+  if (!base) return;
+
+  fetch(base + '/gps', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ lon: lon, lat: lat })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function() {
+    sendCount++;
+    document.getElementById('count').textContent = '已发送: ' + sendCount + ' 次';
+    setStatus('发送成功 ' + new Date().toLocaleTimeString(), 'status-ok');
+  })
+  .catch(function(e) {
+    setStatus('发送失败: ' + e.message, 'status-err');
+  });
+}
+
+function onPosition(pos) {
+  var lon = pos.coords.longitude;
+  var lat = pos.coords.latitude;
+  var acc = pos.coords.accuracy;
+
+  updateCoords(lon, lat, acc);
+
+  // Throttle to 1 second
+  var now = Date.now();
+  if (now - lastSendTime >= SEND_INTERVAL_MS) {
+    lastSendTime = now;
+    sendGps(lon, lat);
+  }
+}
+
+function onError(err) {
+  setStatus('GPS 错误: ' + err.message, 'status-err');
+}
+
+function startGps() {
+  if (!navigator.geolocation) {
+    setStatus('浏览器不支持 GPS', 'status-err');
+    return;
+  }
+
+  document.getElementById('btnStart').disabled = true;
+  document.getElementById('btnStop').disabled = false;
+  setStatus('正在获取 GPS...', 'status-wait');
+
+  watchId = navigator.geolocation.watchPosition(onPosition, onError, {
+    enableHighAccuracy: true,
+    maximumAge: 0,
+    timeout: 10000
+  });
+}
+
+function stopGps() {
+  if (watchId !== null) {
+    navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+  }
+  document.getElementById('btnStart').disabled = false;
+  document.getElementById('btnStop').disabled = true;
+  setStatus('已停止', 'status-wait');
+}
+
+function sendManual() {
+  var lon = parseFloat(document.getElementById('manualLon').value);
+  var lat = parseFloat(document.getElementById('manualLat').value);
+  if (isNaN(lon) || isNaN(lat)) {
+    alert('请输入有效坐标');
+    return;
+  }
+  updateCoords(lon, lat, null);
+  sendGps(lon, lat);
+}
+
+// Restore saved IP
+var savedIp = localStorage.getItem('qiban_board_ip');
+if (savedIp) document.getElementById('boardIp').value = savedIp;
+document.getElementById('boardIp').addEventListener('change', function() {
+  localStorage.setItem('qiban_board_ip', this.value);
+});
+</script>
+</body>
+</html>

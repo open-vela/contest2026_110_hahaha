@@ -1,0 +1,54 @@
+# Dependency folders
+node_modules/
+quickapp/*/node_modules/
+
+# QuickApp build outputs
+quickapp/*/build/
+quickapp/*/dist/
+quickapp/*/sign/
+
+# Native/openvela build byproducts
+*.o
+*.a
+*.elf
+*.hex
+*.map
+*.d
+.built
+.depend
+Make.dep
+
+# Python runtime files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local Python/voice environments and model caches
+.venv/
+venv/
+tools/audio/.pydeps/
+tools/audio/.venv_voice/
+tools/audio/.voice_cache/
+tools/audio/models/
+tools/audio/voice.env
+
+# Server runtime state
+server/data/
+server/.env
+
+# Offline map/road-graph build artifacts (source PBF, downloaded tiles, generated bin)
+tools/map_assets/build/
+
+# Vendored offline-map demo data and local build products
+third_party/LVGL-Offline-Map/**/*.osm.pbf
+third_party/LVGL-Offline-Map/**/road_graph.bin
+third_party/LVGL-Offline-Map/**/road_graph.json
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

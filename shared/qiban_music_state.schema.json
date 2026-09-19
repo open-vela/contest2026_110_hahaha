@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Qiban Music State",
+  "description": "Music player state for the Qiban AI dashboard. Written by music playback services and read by qiban_ui.",
+  "type": "object",
+  "required": ["title", "source", "playing"],
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Current song title",
+      "maxLength": 64
+    },
+    "artist": {
+      "type": "string",
+      "description": "Artist name",
+      "maxLength": 64
+    },
+    "album": {
+      "type": "string",
+      "description": "Album name",
+      "maxLength": 64
+    },
+    "source": {
+      "type": "string",
+      "description": "Playback source",
+      "enum": ["sdcard", "wifi", "bluetooth"]
+    },
+    "source_status": {
+      "type": "string",
+      "description": "Current source availability: ready, no_media, connected, not_connected, or not_ready"
+    },
+    "playing": {
+      "type": "integer",
+      "description": "0=paused, 1=playing",
+      "enum": [0, 1]
+    },
+    "duration_sec": {
+      "type": "integer",
+      "description": "Total track duration in seconds",
+      "minimum": 0
+    },
+    "position_sec": {
+      "type": "integer",
+      "description": "Current playback position in seconds",
+      "minimum": 0
+    },
+    "volume": {
+      "type": "integer",
+      "description": "Volume level 0-100",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "track_index": {
+      "type": "integer",
+      "description": "Current track index (0-based)",
+      "minimum": 0
+    },
+    "track_count": {
+      "type": "integer",
+      "description": "Total number of tracks in playlist",
+      "minimum": 0
+    },
+    "sdcard_available": {
+      "type": "integer",
+      "description": "1 if SD-card music files are available, otherwise 0",
+      "enum": [0, 1]
+    },
+    "wifi_connected": {
+      "type": "integer",
+      "description": "1 if the configured WiFi stream endpoint can be reached, otherwise 0",
+      "enum": [0, 1]
+    },
+    "bluetooth_connected": {
+      "type": "integer",
+      "description": "1 if Bluetooth audio is connected, otherwise 0",
+      "enum": [0, 1]
+    }
+  }
+}

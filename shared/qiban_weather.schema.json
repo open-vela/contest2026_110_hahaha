@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://openvela.local/schemas/qiban_weather.schema.json",
+  "title": "Qiban Weather State",
+  "description": "Weather data for the Qiban AI dashboard.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "condition",
+    "temperature_c"
+  ],
+  "properties": {
+    "condition": {
+      "type": "string",
+      "description": "Weather condition: clear, cloudy, rain, snow, etc."
+    },
+    "temperature_c": {
+      "type": "integer",
+      "description": "Temperature in Celsius."
+    },
+    "humidity": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Humidity percentage."
+    },
+    "wind_speed_kmh": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Wind speed in km/h."
+    },
+    "city": {
+      "type": "string",
+      "description": "City name."
+    },
+    "source": {
+      "type": "string",
+      "description": "Weather data provider or fetcher."
+    },
+    "status": {
+      "type": "string",
+      "description": "Fetch status, for example ok or fetch_failed."
+    },
+    "updated_at": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Unix timestamp of the latest weather update."
+    },
+    "updated_at_epoch_s": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Unix timestamp alias for consumers that use *_epoch_s."
+    },
+    "weather_code": {
+      "type": "integer",
+      "description": "Provider weather code."
+    },
+    "longitude": {
+      "type": "number",
+      "minimum": -180,
+      "maximum": 180
+    },
+    "latitude": {
+      "type": "number",
+      "minimum": -90,
+      "maximum": 90
+    }
+  }
+}

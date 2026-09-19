@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": "mock:qiban_vehicle_service",
+  "generated_at_epoch_s": 0,
+  "speed_kmh": 18,
+  "battery_percent": 78,
+  "remaining_range_km": 34,
+  "ride_duration_min": 1,
+  "total_distance_km_x10": 13,
+  "nav_remaining_m": 4656,
+  "alerts": {
+    "overspeed": false,
+    "low_battery": false,
+    "fatigue": false
+  }
+}

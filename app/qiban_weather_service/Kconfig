@@ -1,0 +1,7 @@
+config LVX_USE_DEMO_CONTEST2026_110_QIBAN_WEATHER_SERVICE
+	bool "Qiban weather fetch service"
+	depends on LIB_CURL
+	default n
+	---help---
+		Enable the weather service that fetches current weather from
+		Open-Meteo and writes /data/qiban_weather.json for qiban_ui.

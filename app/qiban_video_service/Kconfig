@@ -1,0 +1,13 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+config LVX_USE_DEMO_CONTEST2026_110_QIBAN_VIDEO_SERVICE
+	bool "Qiban video playback service"
+	default n
+	depends on MULTIMEDIA_LIBCEDARX
+	---help---
+		Enable the local video playback service for the contest 2026
+		team 110 Qiban AI dashboard.  Uses R528 VE hardware decoding
+		for MP4/H.264/H.265 playback on the LCD.

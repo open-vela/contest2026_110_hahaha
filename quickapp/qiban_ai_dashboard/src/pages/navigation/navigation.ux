@@ -1,0 +1,171 @@
+<template>
+  <div class="page">
+    <div class="topbar">
+      <text class="back" onclick="goBack">返回</text>
+      <text class="title">导航中</text>
+    </div>
+
+    <div class="map-card">
+      <text class="map-title">目的地</text>
+      <text class="map-destination">{{ destination }}</text>
+      <text class="map-turn">{{ nextTurn }}</text>
+      <text class="map-status">{{ routeStatus }}</text>
+    </div>
+
+    <div class="stats-row">
+      <div class="stats-card">
+        <text class="stats-label">剩余距离</text>
+        <text class="stats-value">{{ remainingDistance }}</text>
+      </div>
+      <div class="stats-card">
+        <text class="stats-label">预计到达</text>
+        <text class="stats-value">{{ eta }}</text>
+      </div>
+    </div>
+
+    <div class="steps-card">
+      <text class="section-title">路线步骤</text>
+      <div class="step-item" for="{{ routeSteps }}">
+        <text class="step-distance">{{ $item.distance }}</text>
+        <text class="step-detail">{{ $item.detail }}</text>
+        <text class="step-status">{{ $item.status }}</text>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import Page from "./navigation.js"
+
+export default Page
+</script>
+
+<style>
+.page {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  padding: 16px;
+  background-color: #070b12;
+}
+
+.topbar {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.back {
+  font-size: 22px;
+  color: #38bdf8;
+}
+
+.title {
+  font-size: 28px;
+  color: #f8fafc;
+  font-weight: 600;
+}
+
+.map-card {
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #0f172a;
+  border-width: 1px;
+  border-color: #263244;
+  margin-bottom: 12px;
+}
+
+.map-title {
+  font-size: 18px;
+  color: #94a3b8;
+}
+
+.map-destination {
+  font-size: 34px;
+  color: #f8fafc;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.map-turn {
+  font-size: 22px;
+  color: #cbd5e1;
+  margin-top: 14px;
+}
+
+.map-status {
+  font-size: 18px;
+  color: #38bdf8;
+  margin-top: 10px;
+}
+
+.stats-row {
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.stats-card {
+  width: 48%;
+  border-radius: 8px;
+  padding: 14px;
+  background-color: #111827;
+  border-width: 1px;
+  border-color: #263244;
+}
+
+.stats-label {
+  font-size: 18px;
+  color: #94a3b8;
+}
+
+.stats-value {
+  font-size: 28px;
+  color: #f8fafc;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.steps-card {
+  border-radius: 8px;
+  padding: 14px;
+  background-color: #0f172a;
+  border-width: 1px;
+  border-color: #263244;
+}
+
+.section-title {
+  font-size: 24px;
+  color: #f8fafc;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.step-item {
+  border-radius: 8px;
+  padding: 10px 0px;
+  background-color: #0f172a;
+  border-bottom-width: 1px;
+  border-color: #263244;
+  margin-bottom: 4px;
+}
+
+.step-distance {
+  font-size: 20px;
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.step-detail {
+  font-size: 20px;
+  color: #e2e8f0;
+  margin-top: 4px;
+}
+
+.step-status {
+  font-size: 18px;
+  color: #94a3b8;
+  margin-top: 6px;
+}
+</style>

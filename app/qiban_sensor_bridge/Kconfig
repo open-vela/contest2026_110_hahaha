@@ -1,0 +1,6 @@
+config LVX_USE_DEMO_CONTEST2026_110_QIBAN_SENSOR_BRIDGE
+	bool "Qiban sensor bridge"
+	default n
+	---help---
+		Enable the board-side sensor bridge that ingests external
+		key=value telemetry lines and writes them into /data/qiban_inputs/.

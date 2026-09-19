@@ -1,0 +1,5 @@
+.pydeps/
+.venv_voice/
+.voice_cache/
+models/
+voice.env
